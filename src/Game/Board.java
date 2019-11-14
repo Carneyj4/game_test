@@ -11,19 +11,20 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class Board extends JPanel implements ActionListener {
 
     private Timer timer;
-    private Hero craft;
-    private ArrayList<Villian> Villians;
+    private SpaceShip spaceship;
+    private List<Alien> aliens;
     private boolean ingame;
-    private final int ICRAFT_X = 40;
-    private final int ICRAFT_Y = 60;
-    private final int B_WIDTH = 1000;
-    private final int B_HEIGHT = 900;
+    private final int ICRAFT_X = 0;
+    private final int ICRAFT_Y = 0;
+    private final int B_WIDTH = 400;
+    private final int B_HEIGHT = 300;
     private final int DELAY = 15;
 
     private final int[][] pos = {
@@ -52,7 +53,7 @@ public class Board extends JPanel implements ActionListener {
 
         setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
 
-        craft = new Hero(ICRAFT_X, ICRAFT_Y);
+        spaceship = new SpaceShip(ICRAFT_X, ICRAFT_Y);
 
         initAliens();
 
@@ -61,10 +62,11 @@ public class Board extends JPanel implements ActionListener {
     }
 
     public void initAliens() {
-        Villians = new ArrayList<>();
+        
+        aliens = new ArrayList<>();
 
         for (int[] p : pos) {
-            Villians.add(new Villian(p[0], p[1]));
+            aliens.add(new Alien(p[0], p[1]));
         }
     }
 
@@ -86,27 +88,28 @@ public class Board extends JPanel implements ActionListener {
 
     private void drawObjects(Graphics g) {
 
-        if (craft.isVisible()) {
-            g.drawImage(craft.getImage(), craft.getX(), craft.getY(),
+        if (spaceship.isVisible()) {
+            g.drawImage(spaceship.getImage(), spaceship.getX(), spaceship.getY(),
                     this);
         }
 
-        ArrayList<Missile> ms = craft.getMissiles();
+        List<Missile> ms = spaceship.getMissiles();
 
-        for (Missile m : ms) {
-            if (m.isVisible()) {
-                g.drawImage(m.getImage(), m.getX(), m.getY(), this);
+        for (Missile missile : ms) {
+            if (missile.isVisible()) {
+                g.drawImage(missile.getImage(), missile.getX(), 
+                        missile.getY(), this);
             }
         }
 
-        for (Villian a : Villians) {
-            if (a.isVisible()) {
-                g.drawImage(a.getImage(), a.getX(), a.getY(), this);
+        for (Alien alien : aliens) {
+            if (alien.isVisible()) {
+                g.drawImage(alien.getImage(), alien.getX(), alien.getY(), this);
             }
         }
 
         g.setColor(Color.WHITE);
-        g.drawString("Aliens left: " + Villians.size(), 5, 15);
+        g.drawString("Aliens left: " + aliens.size(), 5, 15);
     }
 
     private void drawGameOver(Graphics g) {
@@ -126,7 +129,7 @@ public class Board extends JPanel implements ActionListener {
 
         inGame();
 
-        updateCraft();
+        updateShip();
         updateMissiles();
         updateAliens();
 
@@ -136,22 +139,23 @@ public class Board extends JPanel implements ActionListener {
     }
 
     private void inGame() {
-        
+
         if (!ingame) {
             timer.stop();
         }
     }
 
-    private void updateCraft() {
+    private void updateShip() {
 
-        if (craft.isVisible()) {
-            craft.move();
+        if (spaceship.isVisible()) {
+            
+            spaceship.move();
         }
     }
 
     private void updateMissiles() {
 
-        ArrayList<Missile> ms = craft.getMissiles();
+        List<Missile> ms = spaceship.getMissiles();
 
         for (int i = 0; i < ms.size(); i++) {
 
@@ -167,48 +171,52 @@ public class Board extends JPanel implements ActionListener {
 
     private void updateAliens() {
 
-        if (Villians.isEmpty()) {
+        if (aliens.isEmpty()) {
 
             ingame = false;
             return;
         }
 
-        for (int i = 0; i < Villians.size(); i++) {
+        for (int i = 0; i < aliens.size(); i++) {
 
-            Villian a = Villians.get(i);
+            Alien a = aliens.get(i);
+            
             if (a.isVisible()) {
                 a.move();
             } else {
-                Villians.remove(i);
+                aliens.remove(i);
             }
         }
     }
 
     public void checkCollisions() {
 
-        Rectangle r3 = craft.getBounds();
+        Rectangle r3 = spaceship.getBounds();
 
-        for (Villian alien : Villians) {
+        for (Alien alien : aliens) {
+            
             Rectangle r2 = alien.getBounds();
 
             if (r3.intersects(r2)) {
-                craft.setVisible(false);
+                
+                spaceship.setVisible(false);
                 alien.setVisible(false);
                 ingame = false;
             }
         }
 
-        ArrayList<Missile> ms = craft.getMissiles();
+        List<Missile> ms = spaceship.getMissiles();
 
         for (Missile m : ms) {
 
             Rectangle r1 = m.getBounds();
 
-            for (Villian alien : Villians) {
+            for (Alien alien : aliens) {
 
                 Rectangle r2 = alien.getBounds();
 
                 if (r1.intersects(r2)) {
+                    
                     m.setVisible(false);
                     alien.setVisible(false);
                 }
@@ -220,12 +228,12 @@ public class Board extends JPanel implements ActionListener {
 
         @Override
         public void keyReleased(KeyEvent e) {
-            craft.keyReleased(e);
+            spaceship.keyReleased(e);
         }
 
         @Override
         public void keyPressed(KeyEvent e) {
-            craft.keyPressed(e);
+            spaceship.keyPressed(e);
         }
     }
 }

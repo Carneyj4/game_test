@@ -1,8 +1,8 @@
 package Game;
 public class Missile extends Sprite {
 
-    private final int BOARD_WIDTH = 1000;
-    private final int MISSILE_SPEED = 20;
+    private final int BOARD_WIDTH = 390;
+    private final int MISSILE_SPEED = 2;
 
     public Missile(int x, int y) {
         super(x, y);
@@ -12,7 +12,7 @@ public class Missile extends Sprite {
     
     private void initMissile() {
         
-        loadImage("res/missle.png");
+        loadImage("src/resources/missile.png");
         getImageDimensions();        
     }
 
@@ -21,6 +21,6 @@ public class Missile extends Sprite {
         x += MISSILE_SPEED;
         
         if (x > BOARD_WIDTH)
-            vis = false;
+            visible = false;
     }
 }
